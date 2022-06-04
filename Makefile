@@ -7,6 +7,8 @@ MYSQL_DBNAME=isucondition
 MYSQL_PASS=isucon
 MYSQL=mysql -h$(MYSQL_HOST) -P$(MYSQL_PORT) -u$(MYSQL_USER) -p$(MYSQL_PASS) $(MYSQL_DBNAME)
 SLOW_LOG=/tmp/slow-query.log
+ISSUE=1
+ANALYZE_FILE=/tmp/analyze.txt
 
 restart: ## Copy configs from repository to conf
 	@make -s nginx-restart
@@ -59,7 +61,17 @@ db-log-show: ## Show slow query to mysql
 	@sudo mysqldumpslow -s t $(SLOW_LOG) | head -n 20
 
 pprof: ## Launch pprof web server
-	go tool pprof -http=0.0.0.0:8080 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
+	@go tool pprof -http=0.0.0.0:8080 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
+
+analyze: ## Exec alp and slow-query-log, and sent logs to github issue.
+	@echo "alp\n\n\`\`\`" > $(ANALYZE_FILE)
+	@make -s alp >> $(ANALYZE_FILE)
+	@echo "\`\`\`\n\n" >> $(ANALYZE_FILE)
+	@echo "slow-query-log\n\n\`\`\`" >> $(ANALYZE_FILE)
+	@make -s db-log-show >> $(ANALYZE_FILE)
+	@echo "\`\`\`\n\n" >> $(ANALYZE_FILE)
+	@gh issue comment $(ISSUE) -F $(ANALYZE_FILE)
+
 
 .PHONY: help
 help:
