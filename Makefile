@@ -41,7 +41,6 @@ alp: ## Run alp
 
 db-restart: ## Restart mysql
 	@sudo cp -a mysql/* /etc/mysql/
-	@sudo rm $(SLOW_LOG)
 	@sudo systemctl restart mysql
 	@echo 'Restart mysql'
 
