@@ -1,8 +1,17 @@
 .DEFAULT_GOAL := help
 
+MYSQL_HOST="127.0.0.1"
+MYSQL_PORT=3306
+MYSQL_USER=isucon
+MYSQL_DBNAME=isucondition
+MYSQL_PASS=isucon
+MYSQL=mysql -h$(MYSQL_HOST) -P$(MYSQL_PORT) -u$(MYSQL_USER) -p$(MYSQL_PASS) $(MYSQL_DBNAME)
+SLOW_LOG=/tmp/slow-query.log
+
 restart: ## Copy configs from repository to conf
 	@make -s nginx-restart
 	@make -s db-restart
+	@make -s db-log-on
 	@make -s go-restart
 
 go-log: ## Log Server
@@ -32,11 +41,23 @@ alp: ## Run alp
 
 db-restart: ## Restart mysql
 	@sudo cp -a mysql/* /etc/mysql/
+	@sudo rm $(SLOW_LOG)
 	@sudo systemctl restart mysql
 	@echo 'Restart mysql'
 
-myprofiler: ## Run myprofiler
-	@myprofiler -user=isucon -password=isucon
+db-log-on: ## Slow query on to mysql
+	@sudo touch $(SLOW_LOG)
+	@sudo rm $(SLOW_LOG)
+	@sudo systemctl restart mysql
+	@$(MYSQL) -e "set global slow_query_log_file = '$(SLOW_LOG)'; set global long_query_time = 0.001; set global slow_query_log = ON;"
+	@echo 'DB log on'
+
+db-log-off: ## Slow query off to mysql
+	@$(MYSQL) -e "set global slow_query_log = OFF;"
+	@echo 'DB log off'
+
+db-log-show: ## Show slow query to mysql
+	@sudo mysqldumpslow -s t $(SLOW_LOG) | head -n 20
 
 .PHONY: help
 help:
