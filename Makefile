@@ -59,6 +59,9 @@ db-log-off: ## Slow query off to mysql
 db-log-show: ## Show slow query to mysql
 	@sudo mysqldumpslow -s t $(SLOW_LOG) | head -n 20
 
+pprof: ## Launch pprof web server
+	go tool pprof -http=0.0.0.0:8080 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
+
 .PHONY: help
 help:
 	@grep -E '^[a-z0-9A-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
