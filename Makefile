@@ -62,10 +62,10 @@ db-log-show: ## Show slow query to mysql
 	@sudo mysqldumpslow -s t $(SLOW_LOG) | head -n 20
 
 pprof: ## Launch pprof web server
-	@echo -n "pprof\n\n- http://" > $(PPROF_URL)
-	@curl http://169.254.169.254/latest/meta-data/public-ipv4 >> $(PPROF_URL)
-	@echo ":8080/ui/" >> $(PPROF_URL)
-	@gh issue comment $(ISSUE) -F $(PPROF_URL)
+	# @echo -n "pprof\n\n- http://" > $(PPROF_URL)
+	# @curl http://169.254.169.254/latest/meta-data/public-ipv4 >> $(PPROF_URL)
+	# @echo ":8080/ui/" >> $(PPROF_URL)
+	# @gh issue comment $(ISSUE) -F $(PPROF_URL)
 	@go tool pprof -http=0.0.0.0:8080 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
 
 analyze: ## Exec alp and slow-query-log, and sent logs to github issue.
