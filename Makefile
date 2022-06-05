@@ -66,7 +66,7 @@ pprof: ## Launch pprof web server
 	# @curl http://169.254.169.254/latest/meta-data/public-ipv4 >> $(PPROF_URL)
 	# @echo ":8080/ui/" >> $(PPROF_URL)
 	# @gh issue comment $(ISSUE) -F $(PPROF_URL)
-	@go tool pprof -http=0.0.0.0:8080 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
+	@go tool pprof -http=0.0.0.0:8080 -seconds 60 /home/isucon/webapp/go/isucondition http://localhost:6060/debug/pprof/profile
 
 analyze: ## Exec alp and slow-query-log, and sent logs to github issue.
 	@echo "alp\n\n\`\`\`" > $(ANALYZE_FILE)
