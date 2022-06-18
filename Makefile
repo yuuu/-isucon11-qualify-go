@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-MYSQL_HOST="127.0.0.1"
+MYSQL_HOST="10.0.0.254"
 MYSQL_PORT=3306
 MYSQL_USER=isucon
 MYSQL_DBNAME=isucondition
@@ -28,6 +28,8 @@ go-restart: ## Restart Server
 
 nginx-restart: ## Restart nginx
 	@sudo cp -a nginx/* /etc/nginx/
+	@sudo touch /var/log/nginx/access.log
+	@sudo touch /var/log/nginx/error.log
 	@sudo rm /var/log/nginx/access.log
 	@sudo rm /var/log/nginx/error.log
 	@sudo systemctl restart nginx
